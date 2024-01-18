@@ -26,4 +26,6 @@ class Booking(object):
         elif not self.customer:
             raise CustomerCannotBeBlank('Customer cannot be blank')
 
+        self.customer.is_valid()
+
         return True

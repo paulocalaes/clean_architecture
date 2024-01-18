@@ -1,15 +1,22 @@
 from booking_service.domain.booking.exceptions import *
 from booking_service.domain.customers.exceptions import *
 from .booking_dto import BookingDto
-from booking_service.domain.booking.enums import ErrorCodes, SuccessCodes
+from booking_service.domain.booking.enums import *
+from .booking_storage import BookingStorage
 
 class BookingManager(object):
+
+    def __init__(self, storage: BookingStorage) -> None:
+        self.storage = storage
+
     def create_new_booking(self, booking_dto: BookingDto):
         booking_aggregate = booking_dto.to_domain()
         
         try:
-            if booking_aggregate.is_valid():
-                return {'message': SuccessCodes.SUCCESS.value, 'code': SuccessCodes.SUCCESS.name}
+            booking_aggregate.create_booking()
+            final_dto = booking_dto.to_dto(booking_aggregate)
+            self.storage.save_booking(final_dto)
+            return {'message': SuccessCodes.SUCCESS.value, 'code': SuccessCodes.SUCCESS.name}
         except CheckinDateCannotBeAfterCheckoutDate as e:
             return {'message':ErrorCodes.CHECKIN_AFTER_CHECKOUT.value, 'code':ErrorCodes.CHECKIN_AFTER_CHECKOUT.name}
         except CustomerCannotBeBlank as e:

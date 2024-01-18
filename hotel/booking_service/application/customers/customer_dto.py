@@ -13,3 +13,7 @@ class CustomerDto(object):
 
     def to_domain(self)-> Customer:
         return Customer(self.name, self.age, self.document, self.email)
+    
+    def to_dto(self, customer: Customer):
+        return CustomerDto(
+            name=customer.name, age=customer.age, document=customer.document, email=customer.email)
